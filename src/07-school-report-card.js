@@ -42,4 +42,71 @@
  */
 export function generateReportCard(student) {
   // Your code here
+
+if (typeof student !== "object" || student === null || Array.isArray(student)) return null;
+  const marks = student.marks;
+  const name = student.name;  
+  
+  if( typeof name != "string" || name.trim() === "") return null;
+  if( typeof marks != "object"  || marks === null ||  Array.isArray(marks)) return null;
+
+  const subjects =Object.keys(marks);
+  const marksSecured=Object.values(marks);
+  const allEntries = Object.entries(marks);
+
+  if (subjects.length === 0) return null;
+
+  const Valid_marksSecured = marksSecured.every(
+    (m) => (typeof m === "number" && Number.isFinite(m) && m >= 0 && m <= 100)
+  );
+  if (!Valid_marksSecured) return null;
+  
+   
+const totalMarks =  marksSecured.reduce((tot, m) => tot + m,  0);
+const percentage = parseFloat( ((totalMarks / (subjects.length * 100)) * 100).toFixed(2));
+ 
+  let grade = "F";
+  if (percentage >= 90 && percentage <= 100 ) grade = "A+";
+  else if (percentage >= 80 && percentage < 90) grade = "A";
+  else if (percentage >= 70 && percentage < 80) grade = "B";
+  else if (percentage >= 60 && percentage < 70) grade = "C";
+  else if (percentage >= 40 && percentage < 60) grade = "D";
+
+const highestSubEntry = allEntries.reduce((highest, cur) => ( cur[1] > highest[1] ? cur : highest));
+ 
+const lowestSubEntry = allEntries.reduce((lowest, cur) => ( cur[1] < lowest[1] ? cur : lowest));
+
+const highestSubject = highestSubEntry[0];
+const lowestSubject = lowestSubEntry[0];
+
+const passedSubjects = allEntries  .filter((SubnMark) => {     
+    const marks = SubnMark[1];
+    return marks >= 40;
+  })
+  .map((SubnMark) => {
+    const subject = SubnMark[0];
+    return subject;
+  });
+
+const failedSubjects = allEntries  .filter((SubnMark) => {     
+    const marks = SubnMark[1];
+    return marks < 40;
+  })
+  .map((SubnMark) => {
+    const subject = SubnMark[0];
+    return subject;
+  });
+
+  return { name: name, 
+    totalMarks: totalMarks, 
+    percentage: percentage, 
+    grade: grade, 
+    highestSubject: highestSubject,
+    lowestSubject: lowestSubject,
+    passedSubjects: passedSubjects,
+    failedSubjects:failedSubjects,
+    subjectCount: allEntries.length } ;
+
+
+
 }
