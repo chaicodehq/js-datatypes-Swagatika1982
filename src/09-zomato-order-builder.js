@@ -47,4 +47,82 @@
  */
 export function buildZomatoOrder(cart, coupon) {
   // Your code here
+   
+  if (!Array.isArray(cart) || cart.length === 0) return null;
+
+  const items = [];
+ 
+  for (let i = 0; i < cart.length; i++) {
+    const item = cart[i];
+   
+    if (!item || typeof item !== "object") continue;
+    if (typeof item.qty !== "number" || item.qty <= 0) continue;
+
+    const name = typeof item.name === "string" ? item.name : "";
+    const basePrice = (typeof item.price === "number" && Number.isFinite(item.price)) ? item.price : 0;
+    const qty = item.qty;   
+    const addons = item.addons;  
+
+    
+    let addonTotal = 0;
+    if (Array.isArray(addons)) {
+      for (let j = 0; j < addons.length; j++) {
+        const addon = addons[j]; 
+        if (typeof addon !== "string") continue;
+
+        const addonparts = addon.split(":"); 
+        if (addonparts.length < 2) continue;
+
+        const addonPrice = parseFloat(addonparts[1].trim() );
+        if (!Number.isFinite(addonPrice)) continue;
+
+        addonTotal += addonPrice;
+      }
+    }
+
+ 
+    const itemTotal = (basePrice + addonTotal) * qty;
+
+    items.push({ name, qty, basePrice, addonTotal, itemTotal });
+  }
+
+  if (items.length === 0) return null;
+
+ 
+  let subtotal = 0;
+  for (let i = 0; i < items.length; i++) {
+    subtotal += items[i].itemTotal;
+  }
+
+ 
+  let deliveryFee = 0;
+  if (subtotal < 500) deliveryFee = 30;
+  else if (subtotal < 1000) deliveryFee = 15;
+  else deliveryFee = 0;
+
+  
+  const gst = parseFloat((subtotal * 0.05).toFixed(2));
+
+ 
+  let discount = 0;
+  let code = "";
+  if (typeof coupon === "string") code = coupon.trim().toUpperCase();
+
+  if (code === "FIRST50") {
+    discount = Math.min(subtotal * 0.5, 150);
+  } else if (code === "FLAT100") {
+    discount = 100;
+  } else if (code === "FREESHIP") {
+    discount = deliveryFee;  
+    deliveryFee = 0;        
+  }
+
+ 
+  let grandTotal = subtotal + deliveryFee + gst - discount;
+  grandTotal = Math.max(0, grandTotal);
+  grandTotal = parseFloat(grandTotal.toFixed(2));
+
+  return { items, subtotal, deliveryFee, gst, discount, grandTotal };
+
+
 }
