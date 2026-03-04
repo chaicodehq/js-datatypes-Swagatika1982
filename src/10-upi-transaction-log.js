@@ -48,4 +48,44 @@
  */
 export function analyzeUPITransactions(transactions) {
   // Your code here
+
+  if( !Array.isArray(transactions) || transactions.length === 0) return null;
+  
+  const valid = transactions.filter((tr) => 
+  {   
+    if(!tr || typeof tr !="object") return false;
+    const {amount, type} =tr;
+
+    if (typeof amount !== "number" || !Number.isFinite(amount) ||  || amount <= 0) return false;
+    if (type !== "credit" && type !== "debit") return false;
+    return true;
+  }
+);
+  if (valid.length === 0) return null;
+    
+  // Calculate (on valid transactions only):
+//  *     - totalCredit: sum of all "credit" type amounts
+//  *     - totalDebit: sum of all "debit" type amounts
+//  *     - netBalance: totalCredit - totalDebit
+//  *     - transactionCount: total number of valid transactions
+//  *     - avgTransaction: Math.round(sum of all valid amounts / transactionCount)
+//  *     - highestTransaction: the full transaction object with highest amount
+//  *     - categoryBreakdown: object with category as key and total amount as value
+//  *       e.g., { food: 1500, travel: 800 } (include both credit and debit)
+//  *     - frequentContact: the "to" field value that appears most often
+//  *       (if tie, return whichever appears first)
+//  *     - allAbove100: boolean, true if every valid transaction amount > 100 (use every)
+//  *     - hasLargeTransaction: boolean, true if some valid amount >= 5000 (use some)
+//  *   - Hint: Use filter(), reduce(), sort(), find(), every(), some(),
+//  *     Object.entries(), Math.round(), typeof
+
+  let totalCredit = 0;
+  let totalDebit = 0;
+  let netBalance =  totalCredit - totalDebit;
+  const transactionCount = valid.length;
+
+
 }
+
+ 
+ 
