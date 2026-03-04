@@ -116,4 +116,6 @@ export function processRailwayPNR(pnrData) {
   const chartPrepared = nonCancelled.every(p => p.isConfirmed);
 
   return { pnrFormatted, trainInfo, passengers, summary, chartPrepared };
+
+  
 }
