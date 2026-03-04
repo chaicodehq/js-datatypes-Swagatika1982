@@ -84,7 +84,6 @@ export function analyzeUPITransactions(transactions) {
   let netBalance =  totalCredit - totalDebit;
   const transactionCount = valid.length;
 
-
 }
 
  
