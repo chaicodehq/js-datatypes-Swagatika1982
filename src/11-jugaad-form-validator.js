@@ -63,4 +63,103 @@
  */
 export function validateForm(formData) {
   // Your code here
+const errors = {};
+
+  // Safe fallback in case formData itself is missing
+  const data = formData ?? {};
+
+  // 1. name validation
+  const name = typeof data.name === "string" ? data.name.trim() : "";
+  if (name.length < 2 || name.length > 50) {
+    errors.name = "Name must be 2-50 characters";
+  }
+
+  // 2. email validation
+  const email = typeof data.email === "string" ? data.email.trim() : "";
+  const atIndex = email.indexOf("@");
+  const lastAtIndex = email.lastIndexOf("@");
+  const dotAfterAt = email.indexOf(".", atIndex + 1);
+
+  if (
+    atIndex === -1 ||
+    atIndex !== lastAtIndex ||
+    !email.includes("@") ||
+    dotAfterAt === -1
+  ) {
+    errors.email = "Invalid email format";
+  }
+
+  // 3. phone validation
+  const phone = typeof data.phone === "string" ? data.phone.trim() : "";
+  const validPhoneStart =
+    phone.startsWith("6") ||
+    phone.startsWith("7") ||
+    phone.startsWith("8") ||
+    phone.startsWith("9");
+
+  let allPhoneDigits = true;
+  for (let i = 0; i < phone.length; i++) {
+    if (phone[i] < "0" || phone[i] > "9") {
+      allPhoneDigits = false;
+      break;
+    }
+  }
+
+  if (phone.length !== 10 || !validPhoneStart || !allPhoneDigits) {
+    errors.phone = "Invalid Indian phone number";
+  }
+
+  // 4. age validation
+  let age = data.age;
+  if (typeof age === "string") {
+    age = parseInt(age, 10);
+  }
+
+  if (
+    isNaN(age) ||
+    !Number.isInteger(age) ||
+    age < 16 ||
+    age > 100
+  ) {
+    errors.age = "Age must be an integer between 16 and 100";
+  }
+
+  // 5. pincode validation
+  const pincode = typeof data.pincode === "string" ? data.pincode.trim() : "";
+
+  let allPincodeDigits = true;
+  for (let i = 0; i < pincode.length; i++) {
+    if (pincode[i] < "0" || pincode[i] > "9") {
+      allPincodeDigits = false;
+      break;
+    }
+  }
+
+  if (
+    pincode.length !== 6 ||
+    pincode.startsWith("0") ||
+    !allPincodeDigits
+  ) {
+    errors.pincode = "Invalid Indian pincode";
+  }
+
+  // 6. state validation using optional chaining + nullish coalescing
+  const state = data?.state?.trim?.() ?? "";
+  if (state.length === 0) {
+    errors.state = "State is required";
+  }
+
+  // 7. agreeTerms validation
+  if (Boolean(data.agreeTerms) !== true) {
+    errors.agreeTerms = "Must agree to terms";
+  }
+
+  return {
+    isValid: Object.keys(errors).length === 0,
+    errors,
+  };
+
+
+
+
 }
